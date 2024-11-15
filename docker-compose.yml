@@ -1,0 +1,31 @@
+networks:
+  backend:
+    driver: bridge
+
+services:
+  code:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    networks:
+      - backend
+    container_name: code
+    image: code
+    ports:
+      - "8080:8080"
+
+  redis:
+    image: redis
+    networks:
+      - backend
+    container_name: redis
+
+  db:
+    image: postgres
+    networks:
+      - backend
+    container_name: db
+    environment:
+      POSTGRES_USER: gorm
+      POSTGRES_PASSWORD: gorm
+      POSTGRES_DB: gorm
