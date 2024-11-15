@@ -19,8 +19,11 @@ func Cronjob() {
 		// search by cursor, limit 1000
 
 		var urls []db.Url
-		// get from redis count
-		Db.Preload("Count").Where("id > ?", id).Limit(1000).Find(&urls)
+		// cursor pagination, order by id
+		Db.Preload("Count").Where("id > ?", id).Order("id").Limit(1000).Find(&urls)
+		if len(urls) == 0 {
+			id = 0
+		}
 		fmt.Printf("urls: %v\n", urls)
 
 		for i := range urls {
@@ -30,6 +33,7 @@ func Cronjob() {
 				urls[i].Count.Count = x
 				// Db.Save(&urls[i])
 			}
+			id = int(urls[i].ID)
 		}
 		// Db.Save(&urls)
 		// save full association
